@@ -1,6 +1,8 @@
 *.zip
 *.csv
 *.log
+resources/*.json
+
 .vscode
 
 # Java ignore

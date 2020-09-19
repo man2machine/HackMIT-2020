@@ -38,4 +38,4 @@ api.add_resource(AnalyticsAPI, '/')
 if __name__ == "__main__":
     http_server = WSGIServer(('localhost', 5000), app)
     http_server.serve_forever()
-    app.run()
+    app.run(debug=True)
