@@ -1,7 +1,7 @@
 *.zip
 *.csv
 *.log
-resources/*.json
+ne_10m_ports.geojson
 
 .vscode
 
