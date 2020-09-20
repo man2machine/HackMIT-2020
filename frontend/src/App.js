@@ -1,6 +1,18 @@
 import React from 'react';
 
-import { Row, Col, Container, Card } from "react-bootstrap";
+// bootstrap but as components for react
+
+import {
+  Row,
+  Col,
+  Container,
+  Card,
+  InputGroup,
+  FormControl,
+  Table
+} from "react-bootstrap";
+
+// this is the basic plotting framework we are using (hopefully) instead of d3
 
 import {
   LineChart,
@@ -13,70 +25,42 @@ import {
   YAxis,
 } from "recharts";
 
+// shahir's code and mapbox gl
 import mapboxgl from "mapbox-gl";
 
-import { mock_data, mock_data_bar } from './api';
+import { add_visits_map, green_red_colormap } from './mapMaker'
+
+// api is going to do get requests to fetch data from the back-end
+// unfortunately it looks like the map geojson will be hardcoded in because it's too big
+import { mock_data, mock_data_bar, mock_data_list, mock_list_cols, mock_cards} from './api';
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoicGVyc29uMTI3IiwiYSI6ImNrZmE2bWI2eTB0NXQydG83bXVwempsa3IifQ.jv4_i_eXbKFqpLZuc19S9w";
 
-
-function add_visits_map(map, green_red_colormap) {
-  map.addSource("test", {
-    type: "geojson",
-    data: "09-16-2020-weekly-visit-counts-map.geojson",
-  });
-
-  map.addLayer({
-    id: "heatmap",
-    type: "circle",
-    source: "test",
-    paint: {
-      "circle-radius": {
-        base: 1.75,
-        stops: [
-          [12, 2],
-          [22, 10],
-        ],
-      },
-      // https://www.schemecolor.com/red-orange-green-gradient.php
-      "circle-color": [
-        "case",
-        [">", ["get", "week_visits"], 50],
-        green_red_colormap[5],
-        [">", ["get", "week_visits"], 40],
-        green_red_colormap[4],
-        [">", ["get", "week_visits"], 30],
-        green_red_colormap[3],
-        [">", ["get", "week_visits"], 20],
-        green_red_colormap[2],
-        [">", ["get", "week_visits"], 10],
-        green_red_colormap[1],
-        [">", ["get", "week_visits"], 0],
-        green_red_colormap[0],
-        "#cccccc",
-      ],
-    },
-  });
-}
-
 class App extends React.Component {
+  // this runs at the very beginning of everything (initial values)
+  // and can also do javascript raw stuff
   constructor(props) {
     super(props);
     this.state = {
-      data: mock_data,
-      data_bar: mock_data_bar,
-      lng: 300,
-      lat: 44,
-      zoom: 2,
+      data: mock_data, // a mock to be removed
+      data_bar: mock_data_bar, // a mock to be removed
+      data_list: mock_data_list, // a mock to be removed
+      data_list_cols: mock_list_cols, // this is a mock please fix this!
+      lng: 300, // change me to be on boston
+      lat: 44, // change me to be on boston
+      zoom: 2, // change me to be on boston
       map: null,
-      cards: {
-        "pasta" : 31,
-        "pizza" : 22
-      }
+      cards: mock_cards // please change this
     };
+
+    console.log(this.state);
   }
 
+  // this function runs on the initial load of the screen
+  // it is meant as an initializer for DOM stuff
+  // to do things when the state changes use componentDidChange i.e. look at docs
+  // you can also map things in render() to variables (that's how you make it reactive etc)
   componentDidMount() {
     let map = new mapboxgl.Map({
         container: this.mapContainer,
@@ -89,14 +73,7 @@ class App extends React.Component {
     map.dragPan.enable();
 
     map.on("load", function () {
-      add_visits_map(map, [
-        "#69B34C",
-        "#ACB334",
-        "#FAB733",
-        "#FF8E15",
-        "#FF4E11",
-        "#FF0D0D",
-      ]);
+      add_visits_map(map, green_red_colormap);
     });
     
     map.on("move", () => {
@@ -112,6 +89,7 @@ class App extends React.Component {
     })
   }
 
+  // this runs on every frame and is the output that we will see
   render() {
     return (
       <React.Fragment>
@@ -151,7 +129,7 @@ class App extends React.Component {
                 <Card.Text>{this.state.cards["pizza"]}</Card.Text>
               </Card>
             </Col>
-            <Col xs={8}>
+            <Col xs={6}>
               <div
                 ref={(el) => (this.mapContainer = el)}
                 style={{
@@ -163,8 +141,47 @@ class App extends React.Component {
                 }}
               />
             </Col>
-            <Col xs={2}>
-              <p>search</p>
+            <Col xs={4}>
+              <InputGroup
+                className="mb-3"
+                style={{
+                  marginRight: "10px",
+                }}
+              >
+                <InputGroup.Prepend>
+                  <InputGroup.Text id="basic-addon1">@</InputGroup.Text>
+                </InputGroup.Prepend>
+                <FormControl
+                  placeholder="Username"
+                  aria-label="Username"
+                  aria-describedby="basic-addon1"
+                />
+              </InputGroup>
+              <Table responsive striped bordered hover style={{
+                overflow: "scroll",
+                display: "grid",
+                maxHeight: "340px",
+                
+              }}>
+                <thead>
+                  <tr>
+                    {this.state.data_list_cols.map((item) => {
+                      return (
+                        <tr>{item["title"]}</tr>
+                      )
+                    })}
+                  </tr>
+                </thead>
+                <tbody>
+                  {this.state.data_list.map((item, index) => {
+                    return (
+                      <tr>
+                        <td>{item[this.state.data_list_cols[0]["key"]]}</td>
+                      </tr>
+                    )
+                    })}
+                </tbody>
+              </Table>
             </Col>
           </Row>
           <Row>

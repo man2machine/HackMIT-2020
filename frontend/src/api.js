@@ -60,3 +60,90 @@ export const mock_data_bar = [
           pv: 3908,
         }
       ]
+
+export const mock_data_list = [
+  {
+    name: "Verdes",
+  },
+  {
+    name: "Annas",
+  },
+  {
+    name: "Beantown",
+  },
+  {
+    name: "Thelonius Monkfish",
+  },
+  {
+    name: "Happy Lamb Hot Pot",
+  },
+  {
+    name: "Bertuccis",
+  },
+  {
+    name: "McD",
+  },
+  {
+    name: "other places",
+  },
+  {
+    name: "boston exists",
+  },
+  {
+    name: "harvard is a meme",
+  },
+  {
+    name: "yee",
+  },
+  {
+    name: "yaw",
+  },
+  {
+    name: "Verdes1",
+  },
+  {
+    name: "Annas1",
+  },
+  {
+    name: "Beanto1wn",
+  },
+  {
+    name: "Theloni2us Monkfish",
+  },
+  {
+    name: "Happy La3mb Hot Pot",
+  },
+  {
+    name: "Bertuccis4",
+  },
+  {
+    name: "Mc2D",
+  },
+  {
+    name: "othe3r places",
+  },
+  {
+    name: "bosto7n exists",
+  },
+  {
+    name: "har4vard is a meme",
+  },
+  {
+    name: "ye2e",
+  },
+  {
+    name: "ya1w",
+  },
+];
+
+export const mock_list_cols = [
+  {
+    title: 'Name',
+    key: 'name',
+  },
+]
+
+export const mock_cards = {
+  pasta: 31,
+  pizza: 22,
+};
