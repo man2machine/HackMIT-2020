@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Row, Col, Container } from "react-bootstrap";
+import { Row, Col, Container, Card } from "react-bootstrap";
 
 import {
   LineChart,
@@ -14,6 +14,8 @@ import {
 } from "recharts";
 
 import mapboxgl from "mapbox-gl";
+
+import { mock_data, mock_data_bar } from './api';
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoicGVyc29uMTI3IiwiYSI6ImNrZmE2bWI2eTB0NXQydG83bXVwempsa3IifQ.jv4_i_eXbKFqpLZuc19S9w";
@@ -62,52 +64,16 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: [
-        {
-          name: "Page A",
-          uv: 4000,
-          pv: 2400,
-          amt: 2400,
-        },
-        {
-          name: "Page B",
-          uv: 3000,
-          pv: 1398,
-          amt: 2210,
-        },
-        {
-          name: "Page C",
-          uv: 2000,
-          pv: 9800,
-          amt: 2290,
-        },
-      ],
-      data_bar: [
-        {
-          name: "Page A",
-          uv: 4000,
-          pv: 2400,
-        },
-        {
-          name: "Page B",
-          uv: 3000,
-          pv: 1398,
-        },
-        {
-          name: "Page C",
-          uv: 2000,
-          pv: 9800,
-        },
-        {
-          name: "Page D",
-          uv: 2780,
-          pv: 3908,
-        }
-      ],
+      data: mock_data,
+      data_bar: mock_data_bar,
       lng: 300,
       lat: 44,
       zoom: 2,
       map: null,
+      cards: {
+        "pasta" : 31,
+        "pizza" : 22
+      }
     };
   }
 
@@ -164,7 +130,26 @@ class App extends React.Component {
             }}
           >
             <Col xs={2}>
-              <p>numbers</p>
+              <Card
+                style={{
+                  marginBottom: "20px",
+                }}
+              >
+                <Card.Header as="h5">Featured</Card.Header>
+                <Card.Title>Number of Pastas Eaten</Card.Title>
+                <Card.Subtitle className="mb-2 text-muted">
+                  Important
+                </Card.Subtitle>
+                <Card.Text>{this.state.cards["pasta"]}</Card.Text>
+              </Card>
+              <Card>
+                <Card.Header as="h5">Featured</Card.Header>
+                <Card.Title>Number of Pizzas Eaten</Card.Title>
+                <Card.Subtitle className="mb-2 text-muted">
+                  Less Important
+                </Card.Subtitle>
+                <Card.Text>{this.state.cards["pizza"]}</Card.Text>
+              </Card>
             </Col>
             <Col xs={8}>
               <div
