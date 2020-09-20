@@ -40,7 +40,8 @@ def get_entry_metadata(
     entry,
     include_categories=True,
     include_desc=True,
-    method="model"):
+    forecast_hour=None,
+    method="avg"):
 
     props = {}
 
@@ -48,18 +49,20 @@ def get_entry_metadata(
     for key in copy_fields1:
         props[key] = entry["record"][key]
     
-    props["medial_dwell"] = float(entry["record"]["median_dwell"])
+    props["median_dwell"] = float(entry["record"]["median_dwell"])
     props["visits_by_day"] = json.loads(entry["record"]["visits_by_day"])
     props["visits_by_each_hour"] = json.loads(entry["record"]["visits_by_each_hour"])
     props["date_start"] = entry["record"]["date_range_start"]
     props["date_end"] = entry["record"]["date_range_end"]
     props["weekday_start"] = parse_time_string(entry["record"]["date_range_start"]).weekday()
 
-    copy_fields2 = ["top_category", "sub_category", "latitude", "longitude", "postal_code"]
+    copy_fields2 = ["top_category", "sub_category", "postal_code"]
     for key in copy_fields2:
         props[key] = entry["mapping"][key]
-    
-    forecast_info = get_hourly_forecast(entry, method=method)
+    props["latitude"] = float(entry["mapping"]["latitude"])
+    props["longitude"] = float(entry["mapping"]["longitude"])
+
+    forecast_info = get_hourly_forecast(entry, method=method, forecast_hour=forecast_hour)
     props["forecast_info"] = forecast_info
 
     return props
@@ -120,16 +123,16 @@ def get_weekly_visit_geojson(data):
     feat_coll = gj.FeatureCollection(features)
     return feat_coll
 
-def get_closest_locations(data, query_lon, query_lat, query_cat=None, query_subcat=None, number_output=10):
+def get_closest_locations(data, query_lon, query_lat, query_cat=None, query_subcat=None, num_locs=10):
     bt_lons = []
     bt_lats = []
     bt_indices = []
 
     for n, entry in enumerate(data):
         valid = True
-        if query_cat is not None and str(entry["mapping"]["top_category"]) != query_cat:
+        if query_cat is not None and not (query_cat.lower().strip() in entry["mapping"]["top_category"].lower().strip()):
             valid = False
-        if query_subcat is not None and str(entry["mapping"]["sub_category"]) != query_subcat:
+        if query_subcat is not None and not (query_subcat.lower().strip() in entry["mapping"]["sub_category"].lower().strip()):
             valid = False
         
         if not valid:
@@ -145,8 +148,8 @@ def get_closest_locations(data, query_lon, query_lat, query_cat=None, query_subc
     bt_lats = np.array(bt_lats)
     bt_indices = np.array(bt_indices)
 
-    number_output = min(number_output, len(bt_indices))
-    if number_output == 0:
+    num_locs = min(num_locs, len(bt_indices))
+    if num_locs == 0:
         return []
     
     records = pd.DataFrame(data={
@@ -156,7 +159,7 @@ def get_closest_locations(data, query_lon, query_lat, query_cat=None, query_subc
     })
 
     bt = BallTree(np.deg2rad(records[['lat', 'lon']].values), metric='haversine')
-    distances, indices = bt.query(np.deg2rad(np.c_[query_lat, query_lon]), number_output)
+    distances, indices = bt.query(np.deg2rad(np.c_[query_lat, query_lon]), num_locs)
 
     data_indices = bt_indices[indices[0]].tolist()
 
