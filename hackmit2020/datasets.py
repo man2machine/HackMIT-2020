@@ -17,6 +17,7 @@ import pandas as pd
 
 from sklearn.neighbors._ball_tree import BallTree
 from hackmit2020.utils import get_rel_pkg_path
+from hackmit2020.timeseries import get_avg_forecast_visitors_per_hour
 
 PARSED_DATA = [
     get_rel_pkg_path("resources/parsed_data/09-16-2020-weekly-mapped.json")
@@ -34,11 +35,31 @@ def parse_weekly_mapped_data(fname):
 def parse_time_string(time_str):
     return dateutil.parser.parse(time_str)
 
-def get_map_plot_metadata(
+def get_entry_metadata(
     entry,
     include_categories=True,
     include_desc=True):
+    
     props = {}
+
+    copy_fields1 = ["location_name", "street_address", "city", "region", "postal_code"]
+    for key in copy_fields1:
+        props[key] = entry["record"][key]
+    
+    props["medial_dwell"] = float(entry["record"]["median_dwell"])
+    props["visits_by_day"] = json.loads(entry["record"]["visits_by_day"])
+    props["visits_by_each_hour"] = json.loads(entry["record"]["visits_by_each_hour"])
+    props["date_start"] = entry["record"]["date_range_start"]
+    props["date_end"] = entry["record"]["date_range_end"]
+
+    copy_fields2 = ["top_category", "sub_category", "latitude", "longitude", "postal_code"]
+    for key in copy_fields2:
+        props[key] = entry["mapping"][key]
+    
+    forecast_info = get_avg_forecast_visitors_per_hour(entry)
+    props["forecast_info"] = forecast_info
+
+    return props
 
 def get_weekly_visit_geojson(data):
     features = []
@@ -81,6 +102,10 @@ def get_closest_locations(data, query_lon, query_lat, query_cat=None, query_subc
     bt_lats = np.array(bt_lats)
     bt_indices = np.array(bt_indices)
 
+    number_output = min(number_output, len(bt_indices))
+    if number_output == 0:
+        return []
+    
     records = pd.DataFrame(data={
         'lon': bt_lons,
         'lat': bt_lats,
@@ -90,9 +115,9 @@ def get_closest_locations(data, query_lon, query_lat, query_cat=None, query_subc
     bt = BallTree(np.deg2rad(records[['lat', 'lon']].values), metric='haversine')
     distances, indices = bt.query(np.deg2rad(np.c_[query_lat, query_lon]), number_output)
 
-    data_indices = bt_indices[indices]
+    data_indices = bt_indices[indices[0]].tolist()
 
-    return data_indices, 
+    return data_indices
 
 def haversine(lon1, lat1, lon2, lat2):
     lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])

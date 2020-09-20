@@ -5,6 +5,8 @@ Created on Sat Sep 19 22:39:30 2020
 @author: Shahir
 """
 
+from gevent.pywsgi import WSGIServer
+
 from hackmit2020.rest_api import app
 
 # run the application

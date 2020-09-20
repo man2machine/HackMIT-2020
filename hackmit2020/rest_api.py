@@ -12,9 +12,8 @@ import numpy as np
 from flask import Flask, Response, request, jsonify
 from flask_restful import Resource, Api
 from flask_cors import CORS
-from gevent.pywsgi import WSGIServer
 
-from hackmit2020.datasets import PARSED_DATA, parse_weekly_mapped_data, get_closest_locations
+from hackmit2020.datasets import PARSED_DATA, parse_weekly_mapped_data, get_closest_locations, get_entry_metadata
 
 app = Flask(__name__)
 
@@ -33,10 +32,15 @@ class AnalyticsAPI(Resource):
                 lat = data["lat"]
                 query_cat = data.get("category")
                 indices = get_closest_locations(week0_data, lng, lat, query_cat=query_cat)
-
                 out = {
-                    "indices": indices
+                    "indices": list(indices)
                 }
+
+                return Response(json.dumps(out), status=200, mimetype='application/json')
+            
+            if data["query_type"] == "record_detailed_data":
+                index = data["index"]
+                out = get_entry_metadata(week0_data[index])
 
                 return Response(json.dumps(out), status=200, mimetype='application/json')
 
