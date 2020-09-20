@@ -12,19 +12,6 @@ import {
   Table
 } from "react-bootstrap";
 
-// this is the basic plotting framework we are using (hopefully) instead of d3
-
-import {
-  LineChart,
-  BarChart,
-  Tooltip,
-  Bar,
-  Line,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-} from "recharts";
-
 // shahir's code and mapbox gl
 import mapboxgl from "mapbox-gl";
 
@@ -32,7 +19,9 @@ import { add_visits_map, green_red_colormap } from './mapMaker'
 
 // api is going to do get requests to fetch data from the back-end
 // unfortunately it looks like the map geojson will be hardcoded in because it's too big
-import { mock_data, mock_data_bar, mock_data_list, mock_list_cols, mock_cards} from './api';
+import { mock_data, mock_data_bar, mock_data_list, mock_list_cols, mock_cards} from './utils/api';
+import { MyBarChart } from './components/barChart';
+import { MyLineChart } from "./components/lineChart";
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoicGVyc29uMTI3IiwiYSI6ImNrZmE2bWI2eTB0NXQydG83bXVwempsa3IifQ.jv4_i_eXbKFqpLZuc19S9w";
@@ -157,59 +146,49 @@ class App extends React.Component {
                   aria-describedby="basic-addon1"
                 />
               </InputGroup>
-              <Table responsive striped bordered hover style={{
-                overflow: "scroll",
-                display: "grid",
-                maxHeight: "340px",
-                
-              }}>
+              
+              <Table
+                responsive
+                striped
+                bordered
+                hover
+                style={{
+                  overflow: "scroll",
+                  display: "inline-block",
+                  maxHeight: "340px",
+                }}
+              >
                 <thead>
                   <tr>
                     {this.state.data_list_cols.map((item) => {
-                      return (
-                        <tr>{item["title"]}</tr>
-                      )
+                      return <td>{item["title"]}</td>;
                     })}
                   </tr>
                 </thead>
                 <tbody>
-                  {this.state.data_list.map((item, index) => {
+                  {this.state.data_list.map((item) => {
+                    // can be made a bit more nice with a generator
+                    // note index of the elements regards the row while we care about col below
                     return (
                       <tr>
                         <td>{item[this.state.data_list_cols[0]["key"]]}</td>
+                        <td>{item[this.state.data_list_cols[1]["key"]]}</td>
                       </tr>
-                    )
-                    })}
+                    );
+                  })}
                 </tbody>
               </Table>
             </Col>
           </Row>
           <Row>
             <Col xs={4}>
-              <BarChart width={400} height={200} data={this.state.data_bar}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="uv" fill="#82ca9d" />
-              </BarChart>
+              <MyBarChart data={this.state.data_bar} show={"uv"} />
             </Col>
             <Col xs={4}>
-              <LineChart width={400} height={200} data={this.state.data}>
-                <XAxis dataKey="name" />
-                <YAxis />
-                <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
-                <Line type="monotone" dataKey="amt" stroke="#000000" />
-              </LineChart>
+              <MyLineChart  data={this.state.data} show={["amt"]} />
             </Col>
             <Col xs={4}>
-              <BarChart width={400} height={200} data={this.state.data_bar}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="pv" fill="#8884d8" />
-              </BarChart>
+              <MyBarChart data={this.state.data_bar} show={["pv"]} />
             </Col>
           </Row>
         </Container>

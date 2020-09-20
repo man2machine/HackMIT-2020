@@ -1,3 +1,22 @@
+## What is what
+
+api has a bunch of mocks and some boilerplate for api fetches (get and post) which is dont async; every component is in App but as you grow it you might want to create other files and from them export components (classes extending React.Component) and then import them into app and use them as a regular component. mapMaker creates a map (initialize) and index is simply the boilerplate code from create-react-app. strangely we can only access the geojsons if they are in public
+
+## react basics
+
+props are handed down in the spaghet=stuff and state is like a state you keep in the class
+
+## Docs to read to build on this
+
+- Recharts: http://recharts.org/en-US
+- React Bootstrap: https://react-bootstrap.github.io/components/alerts/
+- React
+- Mapbox GL
+- Styled Components (not actually used yet)
+
+
+## Yarn shit below
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
