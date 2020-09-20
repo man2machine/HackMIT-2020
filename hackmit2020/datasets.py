@@ -130,9 +130,9 @@ def get_closest_locations(data, query_lon, query_lat, query_cat=None, query_subc
 
     for n, entry in enumerate(data):
         valid = True
-        if query_cat is not None and str(entry["mapping"]["top_category"].lower().strip()) != query_cat.lower().strip():
+        if query_cat is not None and not (query_cat.lower().strip() in entry["mapping"]["top_category"].lower().strip()):
             valid = False
-        if query_subcat is not None and str(entry["mapping"]["sub_category"].lower().strip()) != query_subcat.lower().strip():
+        if query_subcat is not None and not (query_subcat.lower().strip() in entry["mapping"]["sub_category"].lower().strip()):
             valid = False
         
         if not valid:

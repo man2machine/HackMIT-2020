@@ -123,16 +123,17 @@ function show_forecast_graph(metadata) {
     y_data_forecast.push(y_data_past[y_data_past.length - 1]);
     y_data_forecast.push(metadata.forecast_info)
     var trace1 = {
-        x: text_dates.slice(0, 6),
+        x: text_dates.slice(0, 7),
         y: y_data_past,
         name: 'data',
         type: 'scatter'
     };
     var trace2 = {
-        x: text_dates.slice(5, 7),
+        x: text_dates.slice(6, 8),
         y: y_data_forecast,
         name: 'forecast',
-        type: 'scatter'
+        type: 'scatter',
+        color: 'lifeExp'
     };
     var layout = {
         height: 200,
@@ -149,6 +150,43 @@ function show_forecast_graph(metadata) {
     Plotly.react(forecast_graph_elem, traces, layout);
 }
 
+// var hour_visit_graph_elem = document.getElementById('hour_visit_graph');
+// var trace = {
+//     x: [],
+//     y: [],
+//     name: 'name',
+//     type: 'scatter'
+// };
+// Plotly.newPlot(hour_visit_graph_elem, [trace], lower_line_layout)
+
+// function show_hour_visit_graph(metadata) {
+//     var y_data = metadata.visits_by_each_hour;
+//     var x_data = [];
+//     for (var i = 0; i < metadata.visits_by_each_hour.length; i++) {
+//         var day = Math.floor(i/24);
+//         x_data.push(text_dates[day]+":"+JSON.stringify(i % 24));
+//     }
+//     var trace1 = {
+//         x: x_data.slice(0, 6),
+//         y: y_data,
+//         name: 'data',
+//         type: 'scatter'
+//     };
+//     var layout = {
+//         height: 200,
+//         margin: {
+//             l: 30,
+//             r: 5,
+//             b: 30,
+//             t: 5,
+//             pad: 4
+//         },
+//     };
+//     var traces = [trace1];
+//     console.log(JSON.stringify(traces))
+//     Plotly.react(hour_visit_graph_elem, traces, layout);
+// }
+
 var visit_graph_elem = document.getElementById('visit_graph');
 var trace = {
     x: [],
@@ -160,9 +198,17 @@ Plotly.newPlot(visit_graph_elem, [trace], lower_line_layout);
 
 function show_visits_graph(metadata) {
     var y_data = metadata.visits_by_day;
+    var colors = [];
+    var pallete = ["#5b273d", "#f87e3d", "#ebd2a1", "#61c49a"];
+    for (var i = 0; i < y_data.length; i++) {
+        colors.push(pallete[i % 4]);
+    }
     var trace1 = {
         x: text_dates.slice(0, 7),
         y: y_data,
+        marker: {
+            color: colors,
+        },
         name: 'data',
         type: 'bar'
     };
@@ -182,6 +228,10 @@ function show_visits_graph(metadata) {
 }
 
 function get_nearest_locs_metadata(loc_metadata, on_success) {
+    var category = null;
+    if (false) {
+        category = loc_metadata.top_category;
+    }
     var response = $.ajax({
         url: 'http://localhost:5000/',
         type: 'POST',
@@ -193,7 +243,7 @@ function get_nearest_locs_metadata(loc_metadata, on_success) {
         xhrFields: {
             withCredentials: false
         },
-        data: JSON.stringify({ "query_type": "closest_locs",  "longitude": loc_metadata.latitude, "latitude": loc_metadata.longitude, "return_metadata": true }),
+        data: JSON.stringify({ "query_type": "closest_locs",  "category": category, "latitude": loc_metadata.latitude, "longitude": loc_metadata.longitude, "return_metadata": true }),
         dataType: 'json',
         success: on_success
     });
@@ -216,12 +266,17 @@ function update_table(locs_metadatas) {
 
 var cat_dwell_graph_elem = document.getElementById('category_dwell_graph');
 
-$.getJSON("../resources/analytics_cache/09-16-2020-weekly-category-stats.json", function(data) {
+$.getJSON("../resources/analytics_cache/09-16-2020-weekly-category-stats-short.json", function(data) {
     var categories = [];
     var times = [];
+    var colors = [];
+    var pallete = ["#5b273d", "#f87e3d", "#ebd2a1", "#61c49a"];
+    var i = 0
     for (var key in data) {
         categories.push(key);
         times.push(data[key]["mean_median_dwell"]);
+        colors.push(pallete[i % 4]);
+        i++;
     }
     var layout = {
         height: 200,
@@ -240,6 +295,10 @@ $.getJSON("../resources/analytics_cache/09-16-2020-weekly-category-stats.json", 
     var trace = {
         x: times,
         y: categories,
+        text: categories,
+        marker: {
+            color: colors
+        },
         name: 'name',
         type: 'bar',
         orientation: 'h'
@@ -274,6 +333,7 @@ map.on('load', function () {
                 .addTo(map);
             show_forecast_graph(data[0]);
             show_visits_graph(data[0]);
+            //show_hour_visit_graph(data[0]);
 
             function on_success2(locs_metadata) {
                 console.log(JSON.stringify(locs_metadata));
@@ -282,7 +342,7 @@ map.on('load', function () {
 
             get_nearest_locs_metadata(data[0], on_success2);
         }
-        get_locs_metadata([properties.index], on_success1, true, true);
+        get_locs_metadata([properties.index], on_success1, false, true);
 
         
     });
