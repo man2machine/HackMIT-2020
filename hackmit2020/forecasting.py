@@ -15,9 +15,8 @@ warnings.filterwarnings("ignore")
 
 HOURS_PER_DAY = 24
 
-
 # Assume hours_per_day_every_day has 168 hours per week and each element is an list of such lists
-def compute_forecasted_visitors_per_hour(visitors_per_day_every_day, param):
+def compute_model_forecasted_visitors_per_hour(visitors_per_day_every_day, param):
     visitors_each_time_step = []
     for i in range(len(visitors_per_day_every_day)):
         visitors_each_time_step.append(visitors_per_day_every_day[i])
@@ -27,7 +26,6 @@ def compute_forecasted_visitors_per_hour(visitors_per_day_every_day, param):
     yhat = output[0]
 
     return yhat[0]
-
 
 # evaluate combinations of p, d and q values for an ARIMA model
 def compute_best_param(dataset, p_values, d_values, q_values):
@@ -48,7 +46,6 @@ def compute_best_param(dataset, p_values, d_values, q_values):
             best_score = answer[2]
         time.sleep(0.5)
     return best_cfg
-
 
 class Leader(pykka.ThreadingActor):
     def __init__(self, dataset, p_values, d_values, q_values):
@@ -92,7 +89,6 @@ class Leader(pykka.ThreadingActor):
                     actor_ref = ComputeARIMAMSE.start(self.reference, self.dataset)
                     actor_ref.tell(order)
 
-
 class ComputeARIMAMSE(pykka.ThreadingActor):
     def __init__(self, reference, dataset):
         super().__init__()
@@ -127,6 +123,7 @@ class ComputeARIMAMSE(pykka.ThreadingActor):
             ref.tell([3])
             self.stop()
 
-dataset = [float(i) + (i % 2) for i in range(7)]
-order = compute_best_param(dataset, range(5), range(2), range(5))
-print(compute_forecasted_visitors_per_hour(dataset, order))
+if __name__ == '__main__':
+    dataset = [float(i) + (i % 2) for i in range(7)]
+    order = compute_best_param(dataset, range(5), range(2), range(5))
+    print(compute_model_forecasted_visitors_per_hour(dataset, order))

@@ -41,14 +41,15 @@ class AnalyticsAPI(Resource):
                 return Response(json.dumps(out), status=200, mimetype='application/json')
             
             if data["query_type"] == "record_detailed_data":
+                method = data.get("forecast_method", "avg")
                 if "index" in data:
                     index = data["index"]
-                    out = get_entry_metadata(week0_data[index])
+                    out = get_entry_metadata(week0_data[index], method=method)
                 elif "indices" in data:
                     indices = data["indices"]
                     out = []
                     for n in indices:
-                        out.append(get_entry_metadata(week0_data[n]))
+                        out.append(get_entry_metadata(week0_data[n]), method=method)
                 else:
                     out = None
 

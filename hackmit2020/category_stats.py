@@ -19,7 +19,6 @@ def get_categories(data):
 def get_category_stats(data):
     """
     This function returns the stats from each category
-
     """
     
     categories = get_categories(data)

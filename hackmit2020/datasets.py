@@ -18,7 +18,7 @@ import pandas as pd
 
 from sklearn.neighbors._ball_tree import BallTree
 from hackmit2020.utils import get_rel_pkg_path
-from hackmit2020.timeseries import get_avg_forecast_visitors_per_hour
+from hackmit2020.timeseries import get_hourly_forecast
 
 PARSED_DATA = [
     get_rel_pkg_path("resources/parsed_data/09-16-2020-weekly-mapped.json")
@@ -39,7 +39,8 @@ def parse_time_string(time_str):
 def get_entry_metadata(
     entry,
     include_categories=True,
-    include_desc=True):
+    include_desc=True,
+    method="model"):
 
     props = {}
 
@@ -58,7 +59,7 @@ def get_entry_metadata(
     for key in copy_fields2:
         props[key] = entry["mapping"][key]
     
-    forecast_info = get_avg_forecast_visitors_per_hour(entry)
+    forecast_info = get_hourly_forecast(entry, method=method)
     props["forecast_info"] = forecast_info
 
     return props
