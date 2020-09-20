@@ -19,7 +19,7 @@ class MyLineChart extends React.Component {
             <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
             {this.props.show.map((item) => {
               return (
-                <Line type="monotone" dataKey={item} stroke="#000000" />
+                <Line type="monotone" dataKey={item} stroke="#ffffff" />
               )
             })}
           </LineChart>

@@ -9,6 +9,7 @@ import {
   Card,
   InputGroup,
   FormControl,
+  Nav,
   Table
 } from "react-bootstrap";
 
@@ -22,6 +23,8 @@ import { add_visits_map, green_red_colormap } from './mapMaker'
 import { mock_data, mock_data_bar, mock_data_list, mock_list_cols, mock_cards} from './utils/api';
 import MyBarChart from './components/barChart';
 import MyLineChart from "./components/lineChart";
+
+// import "./styling/App.css" // looks like shit
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoicGVyc29uMTI3IiwiYSI6ImNrZmE2bWI2eTB0NXQydG83bXVwempsa3IifQ.jv4_i_eXbKFqpLZuc19S9w";
@@ -80,16 +83,49 @@ class App extends React.Component {
 
   // this runs on every frame and is the output that we will see
   render() {
+    /*
+      
+    */
     return (
       <React.Fragment>
-        <h1
-          style={{
-            textAlign: "center",
-            marginBottom: "40px",
-          }}
+        <Nav
+          activeKey="/home"
+          onSelect={(selectedKey) => alert(`selected ${selectedKey}`)}
         >
-          This is a cool visualization.
-        </h1>
+          <Nav.Item>
+            <h1
+              style={{
+                textAlign: "left",
+                marginBottom: "10px",
+                fontSize: 60,
+                fontWeight: "bold",
+              }}
+            >
+              Aristotle
+            </h1>
+          </Nav.Item>
+          <Nav.Item>
+            <InputGroup
+              className="mb-3"
+              style={{
+                marginLeft: "20px",
+                marginTop: "10px",
+                marginRight: "10px",
+                align: "center"
+              }}
+            >
+              <InputGroup.Prepend>
+                <InputGroup.Text id="basic-addon1">@</InputGroup.Text>
+              </InputGroup.Prepend>
+              <FormControl
+                placeholder="Please enter your desired location."
+                aria-label="Please enter your desired location."
+                aria-describedby="basic-addon1"
+              />
+            </InputGroup>
+          </Nav.Item>
+        </Nav>
+
         <Container fluid>
           <Row
             style={{
@@ -100,6 +136,7 @@ class App extends React.Component {
               <Card
                 style={{
                   marginBottom: "20px",
+                  textAlign: "center",
                 }}
               >
                 <Card.Header as="h5">Featured</Card.Header>
@@ -109,7 +146,11 @@ class App extends React.Component {
                 </Card.Subtitle>
                 <Card.Text>{this.state.cards["pasta"]}</Card.Text>
               </Card>
-              <Card>
+              <Card
+                style={{
+                  textAlign: "center",
+                }}
+              >
                 <Card.Header as="h5">Featured</Card.Header>
                 <Card.Title>Number of Pizzas Eaten</Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">
@@ -131,22 +172,7 @@ class App extends React.Component {
               />
             </Col>
             <Col xs={4}>
-              <InputGroup
-                className="mb-3"
-                style={{
-                  marginRight: "10px",
-                }}
-              >
-                <InputGroup.Prepend>
-                  <InputGroup.Text id="basic-addon1">@</InputGroup.Text>
-                </InputGroup.Prepend>
-                <FormControl
-                  placeholder="Username"
-                  aria-label="Username"
-                  aria-describedby="basic-addon1"
-                />
-              </InputGroup>
-              
+              <h2>Available Options</h2>
               <Table
                 responsive
                 striped
@@ -185,7 +211,7 @@ class App extends React.Component {
               <MyBarChart data={this.state.data_bar} show={["uv"]} />
             </Col>
             <Col xs={4}>
-              <MyLineChart  data={this.state.data} show={["amt"]} />
+              <MyLineChart data={this.state.data} show={["amt"]} />
             </Col>
             <Col xs={4}>
               <MyBarChart data={this.state.data_bar} show={["pv"]} />
