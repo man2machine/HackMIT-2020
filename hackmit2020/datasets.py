@@ -52,6 +52,7 @@ def get_entry_metadata(
     props["visits_by_each_hour"] = json.loads(entry["record"]["visits_by_each_hour"])
     props["date_start"] = entry["record"]["date_range_start"]
     props["date_end"] = entry["record"]["date_range_end"]
+    props["weekday_start"] = parse_time_string(entry["record"]["date_range_start"]).weekday()
 
     copy_fields2 = ["top_category", "sub_category", "latitude", "longitude", "postal_code"]
     for key in copy_fields2:

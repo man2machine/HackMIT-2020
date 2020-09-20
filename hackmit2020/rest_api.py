@@ -15,6 +15,7 @@ from flask_cors import CORS
 
 from hackmit2020.datasets import (PARSED_DATA, parse_weekly_mapped_data,
     get_closest_locations, get_entry_metadata, search_weekly_entries)
+from hackmit2020.category_stats import get_category_stats
 
 app = Flask(__name__)
 
@@ -53,6 +54,10 @@ class AnalyticsAPI(Resource):
 
                 return Response(json.dumps(out), status=200, mimetype='application/json')
             
+            if data["query_type"] == "category_stats":
+                out = get_category_stats(week0_data)
+                return Response(json.dumps(out), status=200, mimetype='application/json')
+
             if data["query_type"] == "search":
                 indices = search_weekly_entries(week0_data,
                     search_str=data.get("search_str", ""),
@@ -64,6 +69,10 @@ class AnalyticsAPI(Resource):
                 )
 
                 out = indices
+                return Response(json.dumps(out), status=200, mimetype='application/json')
+            
+            if data["query_type"] == "file_serve":
+                out = None
                 return Response(json.dumps(out), status=200, mimetype='application/json')
 
             response = jsonify(status="Invalid request")
