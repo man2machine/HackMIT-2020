@@ -4,12 +4,13 @@ import React from "react";
 
 import {
   Line,
+  LineChart,
   CartesianGrid,
   XAxis,
   YAxis,
 } from "recharts";
 
-export default class MyLineChart extends React.Component {
+class MyLineChart extends React.Component {
     render() {
         return (
           <LineChart width={400} height={200} data={this.props.data}>
@@ -25,3 +26,5 @@ export default class MyLineChart extends React.Component {
         )
     }
 }
+
+export default MyLineChart

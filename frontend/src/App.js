@@ -20,8 +20,8 @@ import { add_visits_map, green_red_colormap } from './mapMaker'
 // api is going to do get requests to fetch data from the back-end
 // unfortunately it looks like the map geojson will be hardcoded in because it's too big
 import { mock_data, mock_data_bar, mock_data_list, mock_list_cols, mock_cards} from './utils/api';
-import { MyBarChart } from './components/barChart';
-import { MyLineChart } from "./components/lineChart";
+import MyBarChart from './components/barChart';
+import MyLineChart from "./components/lineChart";
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoicGVyc29uMTI3IiwiYSI6ImNrZmE2bWI2eTB0NXQydG83bXVwempsa3IifQ.jv4_i_eXbKFqpLZuc19S9w";
@@ -182,7 +182,7 @@ class App extends React.Component {
           </Row>
           <Row>
             <Col xs={4}>
-              <MyBarChart data={this.state.data_bar} show={"uv"} />
+              <MyBarChart data={this.state.data_bar} show={["uv"]} />
             </Col>
             <Col xs={4}>
               <MyLineChart  data={this.state.data} show={["amt"]} />
