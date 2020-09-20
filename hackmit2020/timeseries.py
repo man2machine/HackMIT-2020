@@ -18,7 +18,7 @@ def compute_forecasted_visitors_per_hour(hours_per_day_per_week):
     
     return [a/(len(hours_per_day_per_week) / HOURS_PER_DAY) for a in avg_results_per_day]
     
-def get_avg_num_visitors_per_hour_each_week(entry):
+def get_avg_forecast_visitors_per_hour(entry):
     avg_results_per_day = [0 for i in range(HOURS_PER_DAY)]
     str_visits_by_each_hour = entry['record']['visits_by_each_hour']
     if len(str_visits_by_each_hour) != 0:
@@ -27,14 +27,13 @@ def get_avg_num_visitors_per_hour_each_week(entry):
         
     return [a for a in avg_results_per_day]
 
-def get_weekly_visit_geojson(data):
+def get_visit_forecast_geojson(data):
     features = []
     for i in range(len(data)):
         entry = data[i]
-        hourly_forecast = get_avg_num_visitors_per_hour_each_week(entry)
+        hourly_forecast = get_avg_forecast_visitors_per_hour(entry)
         props = {
             "hourly_forecasts": hourly_forecast,
-            "hours_in_the_day": [j for j in range(len(hourly_forecast))],
         }
         coords = (float(entry["mapping"]["longitude"]), float(entry["mapping"]["latitude"]))
         feat = gj.Feature(
