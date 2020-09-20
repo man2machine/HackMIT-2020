@@ -15,7 +15,7 @@ map.dragPan.enable();
 function add_visits_map() {
     map.addSource('test', {
         type: 'geojson',
-        data: '../resources/analytics_cache/09-16-2020-weekly-visit-counts.geojson'
+        data: '../resources/analytics_cache/09-16-2020-weekly-visit-counts-map.geojson'
     });
 
     map.addLayer({
