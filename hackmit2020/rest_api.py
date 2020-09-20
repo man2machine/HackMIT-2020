@@ -28,8 +28,8 @@ class AnalyticsAPI(Resource):
             data = request.get_json()
             
             if data["query_type"] == "closest_locs":
-                lng = data["lng"]
-                lat = data["lat"]
+                lng = data["longtitude"]
+                lat = data["latitude"]
                 query_cat = data.get("category")
                 indices = get_closest_locations(week0_data, lng, lat, query_cat=query_cat)
                 out = {
