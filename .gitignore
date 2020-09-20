@@ -2,8 +2,11 @@
 *.csv
 *.log
 ne_10m_ports.geojson
+resources/*
+extra/*
 
 .vscode
+
 
 # Java ignore
 
