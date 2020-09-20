@@ -13,7 +13,8 @@ from flask import Flask, Response, request, jsonify
 from flask_restful import Resource, Api
 from flask_cors import CORS
 
-from hackmit2020.datasets import PARSED_DATA, parse_weekly_mapped_data, get_closest_locations, get_entry_metadata
+from hackmit2020.datasets import (PARSED_DATA, parse_weekly_mapped_data,
+    get_closest_locations, get_entry_metadata, search_weekly_entries)
 
 app = Flask(__name__)
 
@@ -39,9 +40,30 @@ class AnalyticsAPI(Resource):
                 return Response(json.dumps(out), status=200, mimetype='application/json')
             
             if data["query_type"] == "record_detailed_data":
-                index = data["index"]
-                out = get_entry_metadata(week0_data[index])
+                if "index" in data:
+                    index = data["index"]
+                    out = get_entry_metadata(week0_data[index])
+                elif "indices" in data:
+                    indices = data["indices"]
+                    out = []
+                    for n in indices:
+                        out.append(get_entry_metadata(week0_data[n]))
+                else:
+                    out = None
 
+                return Response(json.dumps(out), status=200, mimetype='application/json')
+            
+            if data["query_type"] == "search":
+                indices = search_weekly_entries(week0_data,
+                    search_str=data.get("search_str", ""),
+                    top_category=data.get("top_category"),
+                    sub_category=data.get("sub_category"),
+                    city=data.get("city"),
+                    region=data.get("region"),
+                    postal_code=data.get("postal_code")
+                )
+
+                out = indices
                 return Response(json.dumps(out), status=200, mimetype='application/json')
 
             response = jsonify(status="Invalid request")

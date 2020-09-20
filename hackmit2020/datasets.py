@@ -7,6 +7,7 @@ Created on Sat Sep 19 12:16:55 2020
 
 import os
 import json
+import re
 from math import radians, cos, sin, asin, sqrt
 
 import datetime
@@ -39,7 +40,7 @@ def get_entry_metadata(
     entry,
     include_categories=True,
     include_desc=True):
-    
+
     props = {}
 
     copy_fields1 = ["location_name", "street_address", "city", "region", "postal_code"]
@@ -61,11 +62,51 @@ def get_entry_metadata(
 
     return props
 
+def search_weekly_entries(
+    data,
+    search_str="",
+    top_category=None,
+    sub_category=None,
+    city=None,
+    region=None,
+    postal_code=None):
+
+    indices = []
+
+    if search_str.strip() == "":
+        return []
+    
+    search_keys = re.split("[, ]+", search_str)
+    for index, entry in enumerate(data):
+        fields = ["location_name", "street_address"]
+        entry_strings = [entry["record"][n] for n in fields]
+        valid = False
+        for key in search_keys:
+            for n in entry_strings:
+                if key.lower() in n.lower():
+                    valid = True
+                    break
+        filter_res = ( \
+            (top_category is None or top_category.lower().strip() in (entry["mapping"]["top_category"].lower().strip() or "")) and \
+            (sub_category is None or sub_category.lower().strip() in (entry["mapping"]["sub_category"].lower().strip() or "")) and \
+            (city is None or city.lower().strip() in entry["record"]["mapping"]["city"].lower().strip()) and \
+            (region is None or region.lower().strip() in entry["record"]["mapping"]["region"].lower().strip()) and \
+            (postal_code is None or postal_code.lower().strip() in entry["mapping"]["postal_code"].lower().strip()) \
+        )
+        if not filter_res:
+            valid = False
+        
+        if valid:
+            indices.append(index)
+    
+    return indices
+
 def get_weekly_visit_geojson(data):
     features = []
-    for entry in data:
+    for n, entry in enumerate(data):
         props = {
-            "week_visits": int(entry["record"]["raw_visit_counts"]), 
+            "week_visits": int(entry["record"]["raw_visit_counts"]),
+            "index": n
         }
         coords = (float(entry["mapping"]["longitude"]), float(entry["mapping"]["latitude"]))
         feat = gj.Feature(
@@ -128,8 +169,3 @@ def haversine(lon1, lat1, lon2, lat2):
     r = 3956
     return c * r
 
-if __name__ == '__main__':
-    week0_data = parse_weekly_mapped_data(PARSED_DATA[0])
-    out_data = get_weekly_visit_geojson(week0_data)
-    with open(get_rel_pkg_path("resources/analytics_cache/09-16-2020-weekly-visit-counts.geojson"), 'w') as f:
-        gj.dump(out_data, f)
