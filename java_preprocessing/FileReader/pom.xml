@@ -25,7 +25,7 @@
         <leveldb.version>0.12</leveldb.version>
         <univocity.version>2.1.1</univocity.version>
         <lombok.version>1.18.12</lombok.version>
-        <jackson.version>2.11.2</jackson.version>
+        <jackson.version>2.12.7.1</jackson.version>
     </properties>
     <dependencies>
         <dependency>
